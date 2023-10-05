@@ -40,11 +40,11 @@ def generate_fake_data(
 
 def prepare_data(groups, students, predmets, teachers) -> tuple():
     for_groups = []
-    # Готуємо список кортежів назв компаній
+    # Готуємо список кортежів назв груп
     for group in groups:
         for_groups.append((group,))
 
-    for_students = []  # для таблиці employees
+    for_students = []  # для таблиці students
 
     for stud in students:
         for_students.append((stud, randint(1, NUMBER_GROUPS)))
@@ -63,7 +63,7 @@ def prepare_data(groups, students, predmets, teachers) -> tuple():
 
     for stud in range(1, NUMBER_STUDENTS + 1):
         grade_date = datetime(2023, randint(1, 12), randint(1, 28)).date()
-        # Виконуємо цикл за кількістю співробітників
+
         for_grades.append(
             (stud, randint(1, NUMBER_PREDMETS), grade_date, randint(1, 11))
         )
@@ -73,7 +73,6 @@ def prepare_data(groups, students, predmets, teachers) -> tuple():
 
 def insert_data_to_db(groups, students, teachers, predmets, grades) -> None:
     # Створимо з'єднання з нашою БД та отримаємо об'єкт курсору для маніпуляцій з даними
-
     with sqlite3.connect("grades.db") as con:
         cur = con.cursor()
 
@@ -87,19 +86,13 @@ def insert_data_to_db(groups, students, teachers, predmets, grades) -> None:
 
         cur.executemany(sql_to_predmets, predmets)
 
-        # Далі вставляємо дані про співробітників. Напишемо для нього скрипт і вкажемо змінні
-
         sql_to_students = """INSERT INTO students(student, group_id)
                                VALUES (?, ?)"""
-
-        # Дані були підготовлені заздалегідь, тому просто передаємо їх у функцію
 
         cur.executemany(sql_to_students, students)
 
         sql_to_teachers = """INSERT INTO teachers(teacher, predmet_id)
                                VALUES (?, ?)"""
-
-        # Дані були підготовлені заздалегідь, тому просто передаємо їх у функцію
 
         cur.executemany(sql_to_teachers, teachers)
 
